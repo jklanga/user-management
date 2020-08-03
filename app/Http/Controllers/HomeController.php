@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Interest;
+use App\Language;
+use App\User;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -23,6 +26,20 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $user = User::find(Auth::id());
+
+        $userInterests = [];
+        foreach ($user->interests as $interest) {
+            $userInterests[$interest->interest_id] = $interest->interest;
+        }
+
+        $pageData = [
+            'interests' => Interest::orderBy('interest')->get(),
+            'languages' => Language::get(),
+            'user' => $user,
+            'userInterests' => $userInterests,
+        ];
+
+        return view('home')->with($pageData);
     }
 }

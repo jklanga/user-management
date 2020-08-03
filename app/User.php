@@ -48,4 +48,19 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => $this->freshTimestamp(),
         ])->save();
     }
+
+    public function interests()
+    {
+        return $this->hasMany(UserInterest::class, 'user_id');
+    }
+
+    public function updateUser($data)
+    {
+        foreach ($data as $k => $v) {
+            $this->$k = $v;
+        }
+        $this->save();
+
+        return true;
+    }
 }
