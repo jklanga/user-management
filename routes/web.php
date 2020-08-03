@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 Auth::routes();
@@ -22,4 +22,6 @@ Auth::routes();
 Auth::routes(['verify' => true]);
 Route::group(['middleware' => 'auth', 'middleware' => 'verified'], function() {
     Route::get('/home', 'HomeController@index')->name('home');
+    Route::match(['POST'],'user/interests', array('as' => 'user.interests', 'uses' => 'UserController@editInterests'));
+    Route::match(['POST'], 'user/update', array('as' => 'user.update', 'uses' => 'UserController@update'));
 });
