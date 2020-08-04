@@ -16,7 +16,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'surname', 'email', 'password',
+        'name', 'surname', 'email', 'id_number', 'mobile_number', 'language_id', 'role', 'dob', 'password',
     ];
 
     /**
@@ -51,7 +51,23 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function interests()
     {
-        return $this->hasMany(UserInterest::class, 'user_id');
+        return $this->belongsToMany(Interest::class, 'user_interests');
+    }
+
+    public function language()
+    {
+        return $this->belongsTo(Language::class, 'language_id');
+    }
+
+    public function createUser($data)
+    {
+        $user = new User();
+        foreach ($data as $k => $v) {
+            $user->$k = $v;
+        }
+        $user->save();
+
+        return $user->id;
     }
 
     public function updateUser($data)

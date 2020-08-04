@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Session;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -52,6 +54,12 @@ class Handler extends ExceptionHandler
     {
         if ($exception instanceof \Illuminate\Session\TokenMismatchException) {
             return redirect('login');
+        }
+
+        if ($exception instanceof AuthorizationException) {
+            Session::flash('warning', $exception->getMessage());
+
+            return redirect('home');
         }
 
         return parent::render($request, $exception);

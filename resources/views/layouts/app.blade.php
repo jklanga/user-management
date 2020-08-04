@@ -49,9 +49,17 @@
                                 </li>
                             @endif
                         @else
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('home') }}">Profile</a>
+                            </li>
+                            @canany(['isAdmin','isManager'])
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('user.list') }}">Manage Users</a>
+                            </li>
+                            @endcanany
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }} <span class="caret"></span>
+                                    {{ Auth::user()->name . ' - ' . Auth::user()->role }} <span class="caret"></span>
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -72,7 +80,7 @@
             </div>
         </nav>
 
-        <main class="py-4">
+        <main class="py-4 container">
             @if (count($errors) > 0)
                 <div class="alert alert-danger">
                     <strong>Whoops!</strong> There were some problems with your input.<br><br>
@@ -89,4 +97,39 @@
         </main>
     </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $("#id-number").keyup(function () {
+            var password = $(this).val();
+
+            $('.new-password-field').val(password);
+        });
+
+        $("#id-number").change(function () {
+            var password = $(this).val();
+
+            $('.new-password-field').val(password);
+        });
+
+        $('.deleteUser').click(function() {
+            var username = $(this).attr('name');
+            if (confirm('Delete User (' + username + ')?')) {
+                var url = "./delete";
+                var userId = $(this).attr('id');
+                $.post(url, {userId: userId}, function(status) {
+                    $("#notifications").html('<div class="alert alert-info alert-block"><button type="button" class="close" data-dismiss="alert">&times;</button><b>Info</b>: User deleted</div>');
+
+                    window.location ="./list";
+                });
+            }
+        });
+    });
+</script>
 </html>

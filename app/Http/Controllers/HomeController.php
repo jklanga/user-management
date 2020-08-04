@@ -26,11 +26,15 @@ class HomeController extends Controller
      */
     public function index()
     {
+        if (!Auth::id()) {
+            redirect('/');
+        }
+
         $user = User::find(Auth::id());
 
         $userInterests = [];
         foreach ($user->interests as $interest) {
-            $userInterests[$interest->interest_id] = $interest->interest;
+            $userInterests[$interest->id] = $interest->interest;
         }
 
         $pageData = [
